@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
@@ -85,10 +86,10 @@ import java.util.SortedMap;
  * UI Utils
  */
 public class UIUtils {
-
     private static final Log log = Log.getLog(UIUtils.class);
 
-    public static final String INLINE_WIDGET_EDITOR_ID = "org.jkiss.dbeaver.ui.InlineWidgetEditor";
+    private static final String MONOSPACE_FONT_SYMBOLIC_NAME = "org.jkiss.dbeaver.ui.font.monospace-font";
+    private static final String INLINE_WIDGET_EDITOR_ID = "org.jkiss.dbeaver.ui.InlineWidgetEditor";
     private static final Color COLOR_BLACK = new Color(null, 0, 0, 0);
     private static final Color COLOR_WHITE = new Color(null, 255, 255, 255);
 
@@ -2009,12 +2010,14 @@ public class UIUtils {
     }
 
     public static Font getMonospaceFont() {
-        Font jFaceTextFont = JFaceResources.getFont(JFaceResources.TEXT_FONT);
-        if (GeneralUtils.isMacOS()) { //[#10382]
-            //Menlo is a system monospaced font on macOS
-            return new Font(getDisplay(), "Menlo", getFontHeight(jFaceTextFont), SWT.NONE);
+        FontRegistry registry = JFaceResources.getFontRegistry();
+        if (!registry.hasValueFor(MONOSPACE_FONT_SYMBOLIC_NAME)) {
+            registry.put(
+                MONOSPACE_FONT_SYMBOLIC_NAME,
+                new FontData[]{new FontData("Courier New", getFontHeight(JFaceResources.getTextFont()), SWT.NONE)}
+            );
         }
-        return jFaceTextFont;
+        return registry.get(MONOSPACE_FONT_SYMBOLIC_NAME);
     }
 
     public static <T extends Control> T getParentOfType(Control control, Class<T> parentType) {

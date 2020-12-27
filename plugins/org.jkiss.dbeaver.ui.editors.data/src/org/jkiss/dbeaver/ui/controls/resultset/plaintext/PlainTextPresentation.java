@@ -144,25 +144,20 @@ public class PlainTextPresentation extends AbstractPresentation implements IAdap
 
     @Override
     protected void applyThemeSettings(ITheme currentTheme) {
-        curLineColor = currentTheme.getColorRegistry().get(ThemeConstants.COLOR_SQL_RESULT_CELL_ODD_BACK);
-
         Font rsFont = currentTheme.getFontRegistry().get(ThemeConstants.FONT_SQL_RESULT_SET);
-        if (rsFont != null) {
-            int fontHeight = rsFont.getFontData()[0].getHeight();
-            Font font = UIUtils.getMonospaceFont();
-
-            FontData[] fontData = font.getFontData();
-            fontData[0].setHeight(fontHeight);
-            Font newFont = new Font(font.getDevice(), fontData[0]);
-
-            this.text.setFont(newFont);
-
-            if (monoFont != null) {
-                UIUtils.dispose(monoFont);
-            }
-            monoFont = newFont;
-
+        if (rsFont == null) {
+            return;
         }
+        curLineColor = currentTheme.getColorRegistry().get(ThemeConstants.COLOR_SQL_RESULT_CELL_ODD_BACK);
+        int height = UIUtils.getFontHeight(rsFont);
+        Font nextMonoFont = UIUtils.getMonospaceFont();
+        FontData[] fontData = nextMonoFont.getFontData();
+        fontData[0].setHeight(height);
+        if (monoFont != null) {
+            UIUtils.dispose(monoFont);
+        }
+        monoFont = new Font(nextMonoFont.getDevice(), fontData[0]);
+        text.setFont(monoFont);
     }
 
     private void onCursorChange(int offset) {
